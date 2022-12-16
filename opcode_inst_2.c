@@ -1,102 +1,102 @@
 #include "monty.h"
 
 /**
- * sub - subtract the top element to the second top element of the stack.
+ * _queue - sets the format of the data to a queue (FIFO)
  *
- * @head: head of the linked list.
- * @nline: line number;
- * Return: nothing.
+ * @doubly: head of the linked list
+ * @cline: line number;
+ * Return: no return
  */
-void sub(stack_t **head, unsigned int nline)
+void _queue(stack_t **doubly, unsigned int cline)
 {
-	int i = 0;
-	stack_t *ptr = NULL;
+	(void)doubly;
+	(void)cline;
 
-	ptr = *head;
+	vglo.lifo = 0;
+}
 
-	for (; ptr != NULL; ptr = ptr->next, i++)
+/**
+ * _stack - sets the format fo the data to a stack (LIFO)
+ *
+ * @doubly: head of the linked list
+ * @cline: line number;
+ * Return: no return
+ */
+void _stack(stack_t **doubly, unsigned int cline)
+{
+	(void)doubly;
+	(void)cline;
+
+	vglo.lifo = 1;
+}
+
+/**
+ * _add - adds the top two elements of the stack
+ *
+ * @doubly: head of the linked list
+ * @cline: line number;
+ * Return: no return
+ */
+void _add(stack_t **doubly, unsigned int cline)
+{
+	int m = 0;
+	stack_t *aux = NULL;
+
+	aux = *doubly;
+
+	for (; aux != NULL; aux = aux->next, m++)
 		;
 
-	if (i < 2)
+	if (m < 2)
 	{
-		dprintf(2, "L%u: can't sub, stack too short\n", nline);
-		free_glob_v();
+		dprintf(2, "L%u: can't add, stack too short\n", cline);
+		free_vglo();
 		exit(EXIT_FAILURE);
 	}
 
-	ptr = (*head)->next;
-	ptr->n -= (*head)->n;
-	pop(head, nline);
+	aux = (*doubly)->next;
+	aux->n += (*doubly)->n;
+	_pop(doubly, cline);
 }
 
 /**
- * queue - sets the format of the data to a queue
+ * _nop - doesn't do anythinhg
  *
- * @head: head of the linked list.
- * @nline: line number.
- * Return: nothing.
+ * @doubly: head of the linked list
+ * @cline: line number;
+ * Return: no return
  */
-void queue(stack_t **head, unsigned int nline)
+void _nop(stack_t **doubly, unsigned int cline)
 {
-	(void)head;
-	(void)nline;
-
-	glob_v.lifo = 0;
+	(void)doubly;
+	(void)cline;
 }
 
 /**
- * stack - sets the format of the data to a stack.
+ * _sub - subtracts the top element to the second top element of the stack
  *
- * @head: head of the linked list.
- * @nline: line number.
- * Return: npthing.
+ * @doubly: head of the linked list
+ * @cline: line number;
+ * Return: no return
  */
-void stack(stack_t **head, unsigned int nline)
+void _sub(stack_t **doubly, unsigned int cline)
 {
-	(void)head;
-	(void)nline;
+	int m = 0;
+	stack_t *aux = NULL;
 
-	glob_v.lifo = 1;
-}
-/**
- * add - adds the top two elements of the stack.
- *
- * @head: head of the linked list
- * @nline: line number
- * Return: nothing
- */
-void add(stack_t **head, unsigned int nline)
-{
-	int i = 0;
-	stack_t *ptr = NULL;
+	aux = *doubly;
 
-	ptr = *head;
-
-	for (; ptr != NULL; ptr = ptr->next, i++)
+	for (; aux != NULL; aux = aux->next, m++)
 		;
 
-	if (i < 2)
+	if (m < 2)
 	{
-		dprintf(2, "L%u: can't add, stack too short\n", nline);
-		free_glob_v();
+		dprintf(2, "L%u: can't sub, stack too short\n", cline);
+		free_vglo();
 		exit(EXIT_FAILURE);
 	}
 
-	ptr = (*head)->next;
-	ptr->n += (*head)->n;
-	pop(head, nline);
-}
-
-
-/**
- * nop - doesn't do anything
- *
- * @head: head of the linked list.
- * @nline: line number
- * Return: nothing.
- */
-void nop(stack_t **head, unsigned int nline)
-{
-	(void)head;
-	(void)nline;
+	aux = (*doubly)->next;
+	aux->n -= (*doubly)->n;
+	_pop(doubly, cline);
 }
