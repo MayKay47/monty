@@ -1,63 +1,62 @@
 #include "monty.h"
 
 /**
- * _rotl - rotates the first element to the bottom and  the second to the top
+ * rotr - reverses the stack
  *
- * @doubly: head of the linked list
- * @cline: line number;
- * Return: no return
+ * @head: head of the linked list
+ * @nline: line number
+ * Return: nothing
  */
-void _rotl(stack_t **doubly, unsigned int cline)
+void rotr(stack_t **head, unsigned int nline)
 {
-	stack_t *aux1 = NULL;
-	stack_t *aux2 = NULL;
-	(void)cline;
+	stack_t *ptr = NULL;
+	(void)nline;
 
-	if (*doubly == NULL)
+	if (*head == NULL)
 		return;
 
-	if ((*doubly)->next == NULL)
+	if ((*head)->next == NULL)
 		return;
 
-	aux1 = (*doubly)->next;
-	aux2 = *doubly;
+	ptr = *head;
 
-	for (; aux2->next != NULL; aux2 = aux2->next)
+	for (; ptr->next != NULL; ptr = ptr->next)
 		;
 
-	aux1->prev = NULL;
-	aux2->next = *doubly;
-	(*doubly)->next = NULL;
-	(*doubly)->prev = aux2;
-	*doubly = aux1;
+	ptr->prev->next = NULL;
+	ptr->next = *head;
+	ptr->prev = NULL;
+	(*head)->prev = ptr;
+	*head = ptr;
 }
-
 /**
- * _rotr - reverse the stack
+ * rotl - rotates the first element to the bottom and the second to the top.
  *
- * @doubly: head of the linked list
- * @cline: line number
- * Return: no return
+ * @head: head of the linked list
+ * @nline: line number
+ * Return: nothing
  */
-void _rotr(stack_t **doubly, unsigned int cline)
+void rotl(stack_t **head, unsigned int nline)
 {
-	stack_t *aux = NULL;
-	(void)cline;
+	stack_t *ptr1 = NULL;
+	stack_t *ptr2 = NULL;
+	(void)nline;
 
-	if (*doubly == NULL)
+	if (*head == NULL)
 		return;
 
-	if ((*doubly)->next == NULL)
+	if ((*head)->next == NULL)
 		return;
 
-	aux = *doubly;
+	ptr1 = (*head)->next;
+	ptr2 = *head;
 
-	for (; aux->next != NULL; aux = aux->next)
+	for (; ptr2->next != NULL; ptr2 = ptr2->next)
 		;
 
-	aux->prev->next = NULL;
-	aux->next = *doubly;
-	aux->prev = NULL;
-	(*doubly)->prev = aux;
-	*doubly = aux;
+	ptr1->prev = NULL;
+	ptr2->next = *head;
+	(*head)->next = NULL;
+	(*head)->prev = ptr2;
+	*head = ptr1;
 }
