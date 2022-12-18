@@ -1,102 +1,53 @@
 #include "monty.h"
 
-global_t glob_v;
+globales_t globalvar = {NULL, NULL, NULL};
 
 /**
- * free_glob_v - fress the global variables.
+ * main - entry point for the CLI program
+ * @argc: count of arguments passed to the program
+ * @argv: pointer to an array of char pointers to arguments
+ * Return: EXIT_SUCCESS or EXIT_FAILURE
  */
-void free_glob_v(void)
+
+int main(int argc, char **argv)
 {
-	free_dlistint(glob_v.head);
-	free(glob_v.buffer);
-	fclose(glob_v.fd);
-}
+	char *token = NULL;
+	size_t line_buf_size = 0;
+	int line_number = 0, flag = 0, flag2 = 0;
+	ssize_t line_size;
+	stack_t *stack = NULL;
 
-/**
- * start_glob_v - initializes the global variables.
- *
- * @fd: file descriptor
- * Return: no return.
- */
-void start_glob_v(FILE *fd)
-{
-	glob_v.lifo = 1;
-	glob_v.current = 1;
-	glob_v.arg = NULL;
-	glob_v.head = NULL;
-	glob_v.fd = fd;
-	glob_v.buffer = NULL;
-}
-
-/**
- * checkinput - checks if the file exist and if the file can be opened.
- *
- * @argc: argument count
- * @argv: argument vector.
- *
- * Return: file struct.
- */
-FILE *check_input(int argc, char *argv[])
-{
-	FILE *fd;
-
-	if (argc == 1 || argc > 2)
-	{
-		dprintf(2, "USAGE: monty file\n");
-		exit(EXIT_FAILURE);
-	}
-
-	fd = fopen(argv[1], "r");
-
-	if (fd == NULL)
-	{
-		dprintf(2, "Error: Can't open file %s\n", argv[1]);
-		exit(EXIT_FAILURE);
-	}
-
-	return (fd);
-}
-
-/**
- * main - Entry point
- *
- * @argc: argument count
- * @argv: argument vector
- *
- * Return: 0 on success.
- */
-int main(int argc, char *argv[])
-{
-	void (*f)(stack_t **stack, unsigned int line_number);
-	FILE *fd;
-	size_t size = 256;
-	ssize_t nlines = 0;
-	char *lines[2] = {NULL, NULL};
-
-	fd = check_input(argc, argv);
-	start_glob_v(fd);
-	nlines = getline(&glob_v.buffer, &size, fd);
-	while (nlines != -1)
-	{
-		lines[0] = _strtoky(glob_v.buffer, " \t\n");
-		if (lines[0] && lines[0][0] != '#')
+	if (argc != 2)
+		stderr_usage();
+	globalvar.fd = fopen(argv[1], "r");
+	if (globalvar.fd == NULL)
+		stderr_fopen(argv[1]);
+	line_size = getline(&globalvar.line_buf, &line_buf_size, globalvar.fd);
+	if (globalvar.line_buf[0] == '#')
+		line_size = getline(&globalvar.line_buf, &line_buf_size, globalvar.fd);
+	while (line_size >= 0)
+	{flag = 0;
+		flag2 = 0;
+		line_number++;
+		token = strtok(globalvar.line_buf, DELIM);
+		globalvar.token2 = strtok(NULL, DELIM);
+		if (token == NULL)
+		{flag2 = 1;
+			nop(&stack, line_number); }
+		if (flag2 == 0)
 		{
-			f = opcodes_get(lines[0]);
-			if (!f)
+			if (token[0] == '#')
 			{
-				dprintf(2, "L%u: ", glob_v.current);
-				dprintf(2, "unknown instruction %s\n", lines[0]);
-				free_glob_v();
-				exit(EXIT_FAILURE);
-			}
-			glob_v.arg = _strtoky(NULL, "\t\n");
-			f(&glob_v.head, glob_v.current);
-		}
-		nlines = getline(&glob_v.buffer, &size, fd);
-		glob_v.current++;
-	}
-
-	free_glob_v();
-
-	return (0);
+				line_size = getline(&globalvar.line_buf,
+						    &line_buf_size, globalvar.fd);
+				flag = 1; }}
+		if (flag == 0)
+		{get_builtin(token, &stack, line_number);
+			line_size = getline(&globalvar.line_buf, &line_buf_size,
+					    globalvar.fd); }}
+	free_dlistint(stack);
+	free(globalvar.line_buf);
+	globalvar.line_buf = NULL;
+	fclose(globalvar.fd);
+	return (EXIT_SUCCESS);
 }
